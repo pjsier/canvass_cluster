@@ -86,7 +86,15 @@ var COLOR_OPTIONS = [
 
   document.querySelector("button").addEventListener("click", function(e) {
     var req = new XMLHttpRequest();
-    req.open("POST", window.location.href + "/locations");
+		// Update window to add / if not present
+		var reqUrl = window.location.href;
+		if (reqUrl[reqUrl.length-1] === "/") {
+			reqUrl += "locations";
+		}
+		else {
+			reqUrl += "/locations"
+		}
+    req.open("POST", reqUrl);
     req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     req.onload = function() {
       if (req.status === 200) {
@@ -109,6 +117,8 @@ var COLOR_OPTIONS = [
         markerLayerGroup = L.layerGroup(markers).addTo(map);
       }
     }
+		var numClusters = parseInt(document.querySelector("input[type='number']").value);
+		test_data.clusters = numClusters;
     req.send(JSON.stringify(test_data));
   });
 })();

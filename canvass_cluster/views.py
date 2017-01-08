@@ -17,4 +17,7 @@ def index():
 @views.route('/locations', methods=['POST'])
 def handle_locations():
     cluster_handler = ClusterCreator(request.json['locations'])
-    return json.dumps({'locations': cluster_handler(num_clusters=20)})
+    clusters = request.json.get('clusters', None)
+    num_clusters = clusters if clusters is not None else 20
+
+    return json.dumps({'locations': cluster_handler(num_clusters=num_clusters)})

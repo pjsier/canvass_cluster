@@ -2,7 +2,9 @@
 {% block content %}
 <div class="container">
   <div class="panel">
-    <button>Test</button>
+    <label for="clusters">Number of Clusters</label>
+    <input type="number" min="1" max="20" name="clusters">
+    <button>Update</button>
   </div>
   <div id="map"></div>
 </div>
