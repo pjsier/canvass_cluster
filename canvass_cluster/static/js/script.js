@@ -78,7 +78,7 @@ var COLOR_OPTIONS = [
 
 (function() {
   map = L.map('map');
-  var osmUrl='http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+  var osmUrl='https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png';
   var osmAttrib='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>';
   var osm = new L.TileLayer(osmUrl, {minZoom: 5, maxZoom: 18, attribution: osmAttrib});
   map.addLayer(osm);
@@ -86,7 +86,7 @@ var COLOR_OPTIONS = [
 
   document.querySelector("button").addEventListener("click", function(e) {
     var req = new XMLHttpRequest();
-    req.open("POST", "/locations");
+    req.open("POST", window.location.href + "/locations");
     req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     req.onload = function() {
       if (req.status === 200) {

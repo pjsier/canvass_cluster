@@ -8,6 +8,9 @@ def create_app():
 
     return app
 
+# Exposing so can be picked up by Zappa
+app = create_app()
+
 if __name__ == "__main__":
     import sys
     app = create_app()
