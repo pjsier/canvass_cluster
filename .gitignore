@@ -1,0 +1,5 @@
+.DS_Store
+*.pyc
+canvass_cluster/__pycache__
+*.zip
+venv

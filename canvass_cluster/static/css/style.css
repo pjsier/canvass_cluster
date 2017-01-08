@@ -1,0 +1,9 @@
+body {
+  font-family: "Open Sans", Verdana, sans-serif;
+  font-weight: 300;
+}
+
+#map {
+  width: 350px;
+  height: 500px;
+}
