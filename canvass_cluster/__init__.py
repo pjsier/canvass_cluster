@@ -1,9 +1,12 @@
 from flask import Flask
 from canvass_cluster.views import views
+import os
 
+MAPZEN_KEY = os.getenv('MAPZEN_KEY', None)
 
 def create_app():
     app = Flask(__name__)
+    app.config['MAPZEN_KEY'] = MAPZEN_KEY
     app.register_blueprint(views)
 
     return app

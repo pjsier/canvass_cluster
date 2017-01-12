@@ -1,5 +1,7 @@
 var map;
 var markerLayerGroup = L.layerGroup([]);
+var SAMPLE_DATA;
+
 // https://github.com/dwnoble/LeafletHtmlIcon/blob/master/LeafletHtmlIcon.js
 L.HtmlIcon = L.Icon.extend({
 	options: {},
@@ -76,6 +78,47 @@ var COLOR_OPTIONS = [
   '#d4b9da'
 ];
 
+// Update window to add / if not present
+function checkPath() {
+	if (window.location.href[window.location.href.length-1] === "/") {
+		return "";
+	}
+	else {
+		return "/";
+	}
+}
+
+function getClusters(numPoints) {
+	var req = new XMLHttpRequest();
+	req.open("POST", window.location.href + checkPath() + "locations");
+	req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	req.onload = function() {
+		if (req.status === 200) {
+			// handle response data
+			markerLayerGroup.clearLayers();
+			var respData = JSON.parse(req.responseText);
+			var markers = respData.locations.map(function(p) {
+				// Deep clone of svg string
+				var svgNode = markerSvg.cloneNode(true);
+				svgNode.querySelector("path").setAttribute("fill", COLOR_OPTIONS[p.group - 1]);
+
+				var markerIcon = new L.HtmlIcon({html : svgNode.outerHTML});
+				var m = L.marker([p.lat, p.lon], {icon: markerIcon});
+				m.bindPopup('<p>Group: ' + p.group + '</p>' +
+										'<p>Address: ' + p.address + '</p>' +
+										'<p>ID: ' + p.id + '</p>' +
+										'<p>Created At ' + p.created_at + '</p>');
+				return m;
+			});
+			markerLayerGroup = L.layerGroup(markers).addTo(map);
+		}
+	}
+	var numClusters = parseInt(document.querySelector("input[type='number']").value);
+	SAMPLE_DATA.clusters = numClusters;
+	SAMPLE_DATA.locations = SAMPLE_DATA.locations.slice(0, numPoints)
+	req.send(JSON.stringify(SAMPLE_DATA));
+}
+
 (function() {
   map = L.map('map');
   var osmUrl='https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png';
@@ -84,41 +127,12 @@ var COLOR_OPTIONS = [
   map.addLayer(osm);
   map.setView([41.907477, -87.685913], 10);
 
-  document.querySelector("button").addEventListener("click", function(e) {
-    var req = new XMLHttpRequest();
-		// Update window to add / if not present
-		var reqUrl = window.location.href;
-		if (reqUrl[reqUrl.length-1] === "/") {
-			reqUrl += "locations";
-		}
-		else {
-			reqUrl += "/locations"
-		}
-    req.open("POST", reqUrl);
-    req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    req.onload = function() {
-      if (req.status === 200) {
-        // handle response data
-        markerLayerGroup.clearLayers();
-        var respData = JSON.parse(req.responseText);
-        var markers = respData.locations.map(function(p) {
-          // Deep clone of svg string
-          var svgNode = markerSvg.cloneNode(true);
-          svgNode.querySelector("path").setAttribute("fill", COLOR_OPTIONS[p.group - 1]);
+	var xhr = new XMLHttpRequest();
+	var reqUrl = window.location.href;
+  xhr.addEventListener("load", function() { SAMPLE_DATA = JSON.parse(this.responseText); });
+  xhr.open("GET", window.location.href + checkPath() + "static/js/sample_data.json");
+  xhr.send();
 
-          var markerIcon = new L.HtmlIcon({html : svgNode.outerHTML});
-          var m = L.marker([p.lat, p.lon], {icon: markerIcon});
-          m.bindPopup('<p>Group: ' + p.group + '</p>' +
-                      '<p>Address: ' + p.address + '</p>' +
-                      '<p>ID: ' + p.id + '</p>' +
-                      '<p>Created At ' + p.created_at + '</p>');
-          return m;
-        });
-        markerLayerGroup = L.layerGroup(markers).addTo(map);
-      }
-    }
-		var numClusters = parseInt(document.querySelector("input[type='number']").value);
-		test_data.clusters = numClusters;
-    req.send(JSON.stringify(test_data));
-  });
+  document.querySelector("#eq-50").addEventListener("click", function(e) { getClusters(50); });
+	document.querySelector("#gt-50").addEventListener("click", function(e) { getClusters(100); });
 })();
