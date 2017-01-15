@@ -114,9 +114,10 @@ function getClusters(numPoints) {
 		}
 	}
 	var numClusters = parseInt(document.querySelector("input[type='number']").value);
-	SAMPLE_DATA.clusters = numClusters;
-	SAMPLE_DATA.locations = SAMPLE_DATA.locations.slice(0, numPoints)
-	req.send(JSON.stringify(SAMPLE_DATA));
+	var points = {};
+	points.clusters = numClusters;
+	points.locations = SAMPLE_DATA.locations.slice(0, numPoints);
+	req.send(JSON.stringify(points));
 }
 
 (function() {
