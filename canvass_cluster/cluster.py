@@ -4,7 +4,6 @@ from scipy.spatial.distance import pdist, squareform
 from scipy.cluster.hierarchy import linkage, fcluster
 from scipy.cluster.vq import kmeans2
 from math import radians, cos, sin, asin, sqrt
-from flask import current_app
 import numpy as np
 import requests
 import json
@@ -33,9 +32,10 @@ class ClusterCreator:
     Takes in a list of location dicts, calculates the distance between the points,
     and assigns clustered groups adding it as a key, value pair in each dict
     """
-    def __init__(self, locations, num_clusters):
+    def __init__(self, locations, num_clusters, api_key):
         self.locations = locations
         self.num_clusters = num_clusters
+        self.api_key = api_key
 
         if len(self.locations) <= 50:
             self.point_arr = self.mapzen_matrix(
@@ -64,7 +64,7 @@ class ClusterCreator:
         }
         mapzen_url = 'http://matrix.mapzen.com/many_to_many?json={}&api_key={}'.format(
             json.dumps(mapzen_locs),
-            current_app.config['MAPZEN_KEY']
+            self.api_key
         )
 
         r = requests.get(mapzen_url).json()
