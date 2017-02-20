@@ -27,7 +27,7 @@ def haversine(p1, p2):
     return km
 
 
-class ClusterCreator:
+class ClusterCreator(object):
     """
     Takes in a list of location dicts, calculates the distance between the points,
     and assigns clustered groups adding it as a key, value pair in each dict
