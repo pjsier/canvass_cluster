@@ -26,6 +26,7 @@ var svgStr = '<svg width="35" height="50" xmlns="http://www.w3.org/2000/svg" cla
 </svg>'
 var parser = new DOMParser();
 var markerSvg = parser.parseFromString(svgStr, "text/html").querySelector("svg");
+var loadingGif = document.getElementById("loading");
 
 // Organized by section, deliberately mixing up now
 var COLOR_ARR = [
@@ -111,12 +112,15 @@ function getClusters(numPoints) {
 				return m;
 			});
 			markerLayerGroup = L.layerGroup(markers).addTo(map);
+			loadingGif.style.display = "none";
 		}
 	}
 	var numClusters = parseInt(document.querySelector("input[type='number']").value);
 	var points = {};
 	points.clusters = numClusters;
 	points.locations = SAMPLE_DATA.locations.slice(0, numPoints);
+	loadingGif.style.display = "inherit";
+
 	req.send(JSON.stringify(points));
 }
 

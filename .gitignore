@@ -2,4 +2,5 @@
 *.pyc
 canvass_cluster/__pycache__
 *.zip
+.env
 venv

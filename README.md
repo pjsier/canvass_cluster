@@ -23,9 +23,3 @@ the name of the S3 bucket in `zappa_settings.json` and run:
 ```
 zappa deploy dev
 ```
-
-## Notes
-
-Largely due to dependencies on `numpy` and `scipy`, it's currently almost past the
-size limit for uploading packages to Lambda. Might be worth just making this a back
-end and then having a static site entirely on S3 that interacts with it.

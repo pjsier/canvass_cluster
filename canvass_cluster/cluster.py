@@ -1,8 +1,6 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
-from scipy.spatial.distance import pdist, squareform
-from scipy.cluster.hierarchy import linkage, fcluster
-from scipy.cluster.vq import kmeans2
+from hcluster import pdist, squareform, linkage, fcluster
 from math import radians, cos, sin, asin, sqrt
 import numpy as np
 import requests
@@ -76,19 +74,26 @@ class ClusterCreator(object):
 
     def time_subcluster(self, locs):
         # Getting subclusters at Mapzen's limit
-        kmeans_cluster = kmeans2(locs, 50)
+        cluster_linkage = linkage(locs, method='ward')
+        clusters = fcluster(cluster_linkage, 50, criterion='maxclust')
 
-        mapzen_locs = [{'lat': p[1], 'lon': p[0]} for p in kmeans_cluster[0]]
+        cluster_means = np.array([np.mean(
+            locs[np.where(clusters == i)], axis=0
+        ) for i in range(1, 51)])
+
+        mapzen_locs = [{'lat': p[1], 'lon': p[0]} for p in cluster_means]
         mapzen_matrix = self.mapzen_matrix(mapzen_locs)
 
         # Cluster labels used for mapping back together
-        cl = kmeans_cluster[1]
+        # Subtracting one to use 0 index
+        cl = clusters - 1
 
         # Get a matching distance matrix of lat/lon distance, get ratios
-        kmeans_km_dist = squareform(pdist(kmeans_cluster[0],
-                                          (lambda u,v: haversine(u,v))))
+        cluster_km_dist = squareform(pdist(cluster_means,
+                                           (lambda u,v: haversine(u,v))))
+
         dist_ratio_matrix = np.nan_to_num(np.divide(mapzen_matrix,
-                                                    kmeans_km_dist))
+                                                    cluster_km_dist))
         # Divide items by mean to normalize a bit
         dist_ratio_matrix = np.nan_to_num(np.divide(dist_ratio_matrix,
                                                     dist_ratio_matrix.mean()))
