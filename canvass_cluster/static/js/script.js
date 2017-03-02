@@ -119,7 +119,7 @@ function getClusters(numPoints) {
 	var points = {};
 	points.clusters = numClusters;
 	points.locations = SAMPLE_DATA.locations.slice(0, numPoints);
-	loadingGif.style.display = "inherit";
+	loadingGif.style.display = "inline-block";
 
 	req.send(JSON.stringify(points));
 }

@@ -20,6 +20,15 @@ body {
   padding: 15px;
 }
 
+.panel p {
+  height: 45px;
+}
+
+.panel p * {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 #map {
   position: absolute;
   top: 0;
@@ -35,11 +44,11 @@ body {
 
 @media (max-width: 775px) {
   .panel {
-    bottom: 25%;
+    bottom: 30%;
     right: 0;
   }
   #map {
-    top: 25%;
+    top: 30%;
     left: 0;
   }
 }
